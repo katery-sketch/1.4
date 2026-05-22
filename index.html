@@ -291,6 +291,21 @@ function startGame(){
   updateProgress();
 }
 
+/* Desktop drag auto-scroll */
+var asRAF=null,asSpeed=0;
+function asStep(){if(asSpeed!==0){window.scrollBy(0,asSpeed);asRAF=requestAnimationFrame(asStep)}else{asRAF=null}}
+function asStart(){if(!asRAF)asRAF=requestAnimationFrame(asStep)}
+function asStop(){if(asRAF){cancelAnimationFrame(asRAF);asRAF=null}asSpeed=0}
+if(!isTouch){
+  document.addEventListener('dragover',function(e){
+    var EDGE=100,MAX=12,y=e.clientY,h=window.innerHeight;
+    if(y<EDGE){asSpeed=-MAX*(1-y/EDGE);asStart()}
+    else if(y>h-EDGE){asSpeed=MAX*(1-(h-y)/EDGE);asStart()}
+    else{asSpeed=0}
+  });
+  document.addEventListener('dragend',asStop);
+}
+
 /* Touch drag */
 var tdId=null,tdEl=null,ghost=null,tx0=0,ty0=0,tMoved=false;
 var THRESH=8;
